@@ -81,7 +81,7 @@
       transition: background .3s;
     }
     [data-theme="light"] #navbar { background: rgba(240,240,255,.9); }
-    .nav-brand { font-size: 1.25rem; font-weight: 800; background: linear-gradient(135deg,#7c3aed,#06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-brand { font-size: 1.25rem; font-weight: 800; color: #7c3aed; background: linear-gradient(135deg,#7c3aed,#06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
     .nav-links a {
       padding: 6px 14px; border-radius: 20px; font-size: .85rem; font-weight: 600;
@@ -135,13 +135,15 @@
     }
     .hero-title {
       font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 900; line-height: 1.1;
+      color: #a78bfa;
       background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #06b6d4 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       animation: fadeDown .7s ease;
     }
     [data-theme="light"] .hero-title {
+      color: #7c3aed;
       background: linear-gradient(135deg, #1a1a3a 0%, #7c3aed 50%, #06b6d4 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
     .hero-sub {
       max-width: 640px; margin: 20px auto 0;
@@ -156,7 +158,7 @@
       background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 20px 28px; text-align: center;
     }
-    .stat-num { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg,#7c3aed,#06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-num { font-size: 2rem; font-weight: 900; color: #7c3aed; background: linear-gradient(135deg,#7c3aed,#06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .stat-label { font-size: .8rem; color: var(--text3); margin-top: 4px; }
     .hero-cta {
       display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; justify-content: center;
@@ -943,7 +945,7 @@ const RESOURCES = [
 ═══════════════════════════════════════ */
 const STORAGE_KEY = 'dsa-roadmap-progress-v2';
 let progress = {};
-try { progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(_) {}
+try { progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(err) { console.warn('DSA Roadmap: failed to parse saved progress, starting fresh.', err); }
 
 function saveProgress() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
@@ -1142,6 +1144,9 @@ function initParticles() {
     H = canvas.height = canvas.offsetHeight;
   }
 
+  const PARTICLE_COUNT = 80;
+  const MAX_CONNECTION_DISTANCE = 100;
+
   function makeParticle() {
     return {
       x: Math.random() * W,
@@ -1155,7 +1160,7 @@ function initParticles() {
 
   function init() {
     resize();
-    particles = Array.from({ length: 80 }, makeParticle);
+    particles = Array.from({ length: PARTICLE_COUNT }, makeParticle);
   }
 
   function draw() {
@@ -1169,8 +1174,8 @@ function initParticles() {
         : `rgba(124,58,237,${p.alpha * .5})`;
       ctx.fill();
       p.x += p.dx; p.y += p.dy;
-      if (p.x < 0 || p.x > W) p.dx *= -1;
-      if (p.y < 0 || p.y > H) p.dy *= -1;
+      if (p.x < 0 || p.x > W) { p.dx *= -1; p.x = Math.max(0, Math.min(W, p.x)); }
+      if (p.y < 0 || p.y > H) { p.dy *= -1; p.y = Math.max(0, Math.min(H, p.y)); }
     });
     // draw connections
     for (let i = 0; i < particles.length; i++) {
@@ -1178,13 +1183,13 @@ function initParticles() {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 100) {
+        if (dist < MAX_CONNECTION_DISTANCE) {
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
           ctx.strokeStyle = isDark
-            ? `rgba(167,139,250,${.15 * (1 - dist / 100)})`
-            : `rgba(124,58,237,${.08 * (1 - dist / 100)})`;
+            ? `rgba(167,139,250,${.15 * (1 - dist / MAX_CONNECTION_DISTANCE)})`
+            : `rgba(124,58,237,${.08 * (1 - dist / MAX_CONNECTION_DISTANCE)})`;
           ctx.lineWidth = .8;
           ctx.stroke();
         }
@@ -1203,7 +1208,7 @@ function initParticles() {
 ═══════════════════════════════════════ */
 function initAnimations() {
   const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
   }, { threshold: .1 });
   document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
 }
