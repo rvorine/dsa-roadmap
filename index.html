@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSA Pattern Roadmap — Beginner to Expert</title>
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS & THEME
+    ═══════════════════════════════════════ */
+    :root {
+      --bg: #0d0d1a;
+      --bg2: #12122a;
+      --bg3: #1a1a35;
+      --card: #1e1e3f;
+      --card2: #252550;
+      --border: #2e2e60;
+      --text: #e8e8ff;
+      --text2: #a0a0cc;
+      --text3: #6060aa;
+      --accent: #7c3aed;
+      --accent2: #5b21b6;
+      --green: #10b981;
+      --blue: #3b82f6;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --pink: #ec4899;
+      --cyan: #06b6d4;
+      --teal: #14b8a6;
+      --shadow: 0 4px 24px rgba(0,0,0,0.5);
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+    [data-theme="light"] {
+      --bg: #f0f0ff;
+      --bg2: #e8e8ff;
+      --bg3: #ffffff;
+      --card: #ffffff;
+      --card2: #f5f5ff;
+      --border: #d0d0ff;
+      --text: #1a1a3a;
+      --text2: #4a4a7a;
+      --text3: #8080aa;
+      --shadow: 0 4px 24px rgba(124,58,237,0.1);
+    }
+
+    /* ═══════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .3s, color .3s;
+      overflow-x: hidden;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    ul { list-style: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+
+    /* ═══════════════════════════════════════
+       SCROLLBAR
+    ═══════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* ═══════════════════════════════════════
+       NAVBAR
+    ═══════════════════════════════════════ */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 32px;
+      background: rgba(13,13,26,.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background .3s;
+    }
+    [data-theme="light"] #navbar { background: rgba(240,240,255,.9); }
+    .nav-brand { font-size: 1.25rem; font-weight: 800; color: #7c3aed; background: linear-gradient(135deg,#7c3aed,#06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+    .nav-links a {
+      padding: 6px 14px; border-radius: 20px; font-size: .85rem; font-weight: 600;
+      color: var(--text2); transition: all .2s;
+    }
+    .nav-links a:hover { background: var(--accent); color: #fff; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    /* Theme toggle */
+    #themeBtn {
+      width: 48px; height: 26px; border-radius: 13px;
+      background: var(--card2); border: 1px solid var(--border);
+      position: relative; transition: background .3s;
+    }
+    #themeBtn::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent); transition: transform .3s;
+    }
+    [data-theme="light"] #themeBtn::after { transform: translateX(22px); }
+
+    /* Progress pill */
+    #progressPill {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 14px; font-size: .82rem; font-weight: 700;
+      color: var(--green);
+    }
+
+    /* Search */
+    #searchBox {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 16px; font-size: .85rem;
+      color: var(--text); outline: none; width: 180px; transition: border-color .2s, width .3s;
+    }
+    #searchBox:focus { border-color: var(--accent); width: 240px; }
+
+    /* ═══════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════ */
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 120px 20px 60px;
+      position: relative; overflow: hidden;
+    }
+    #particles { position: absolute; inset: 0; pointer-events: none; }
+    .hero-badge {
+      display: inline-block; background: rgba(124,58,237,.2); border: 1px solid rgba(124,58,237,.4);
+      color: #a78bfa; padding: 6px 18px; border-radius: 20px; font-size: .8rem; font-weight: 700;
+      letter-spacing: .08em; margin-bottom: 24px; animation: fadeDown .6s ease;
+    }
+    .hero-title {
+      font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 900; line-height: 1.1;
+      color: #a78bfa;
+      background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #06b6d4 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: fadeDown .7s ease;
+    }
+    [data-theme="light"] .hero-title {
+      color: #7c3aed;
+      background: linear-gradient(135deg, #1a1a3a 0%, #7c3aed 50%, #06b6d4 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub {
+      max-width: 640px; margin: 20px auto 0;
+      font-size: 1.1rem; color: var(--text2); line-height: 1.7;
+      animation: fadeDown .8s ease;
+    }
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 40px; flex-wrap: wrap; justify-content: center;
+      animation: fadeDown .9s ease;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 28px; text-align: center;
+    }
+    .stat-num { font-size: 2rem; font-weight: 900; color: #7c3aed; background: linear-gradient(135deg,#7c3aed,#06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-label { font-size: .8rem; color: var(--text3); margin-top: 4px; }
+    .hero-cta {
+      display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; justify-content: center;
+      animation: fadeDown 1s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg,#7c3aed,#5b21b6); color: #fff;
+      padding: 14px 32px; border-radius: 30px; font-weight: 700; font-size: 1rem;
+      box-shadow: 0 0 30px rgba(124,58,237,.4); transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(124,58,237,.6); }
+    .btn-secondary {
+      background: var(--card); border: 1px solid var(--border); color: var(--text);
+      padding: 14px 32px; border-radius: 30px; font-weight: 700; font-size: 1rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--text3); font-size: .78rem;
+    }
+    .scroll-arrow { width: 24px; height: 24px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(45deg); animation: bounce 1.5s infinite; }
+
+    /* ═══════════════════════════════════════
+       MAIN CONTENT WRAPPER
+    ═══════════════════════════════════════ */
+    main { max-width: 1280px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* Section header */
+    .section-header { text-align: center; margin-bottom: 48px; padding-top: 80px; }
+    .section-tag {
+      display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.2; }
+    .section-sub { color: var(--text2); margin-top: 12px; font-size: 1rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+    /* ═══════════════════════════════════════
+       PHASE TIMELINE
+    ═══════════════════════════════════════ */
+    #roadmap { position: relative; }
+    .timeline {
+      position: relative;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .timeline::before {
+      content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+      background: linear-gradient(to bottom, #7c3aed, #06b6d4, #10b981);
+      transform: translateX(-50%);
+    }
+
+    /* Phase block */
+    .phase {
+      display: flex; gap: 48px; position: relative; padding: 40px 0;
+    }
+    .phase:nth-child(even) { flex-direction: row-reverse; }
+
+    .phase-dot {
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; border: 3px solid var(--bg); z-index: 2; flex-shrink: 0;
+      box-shadow: 0 0 0 6px var(--bg);
+    }
+
+    .phase-content { flex: 1; max-width: calc(50% - 60px); }
+    .phase-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .phase-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+    .phase-desc { color: var(--text2); font-size: .9rem; line-height: 1.6; margin-bottom: 20px; }
+    .phase-duration {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 14px; font-size: .78rem; color: var(--text2);
+    }
+
+    /* Topic grid inside phase */
+    .topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 20px; }
+    .topic-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 14px; transition: border-color .2s, transform .2s, box-shadow .2s;
+      cursor: pointer;
+    }
+    .topic-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+    .topic-card.done { border-color: var(--green); background: rgba(16,185,129,.07); }
+    .topic-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .topic-icon { font-size: 1.2rem; }
+    .topic-name { font-size: .88rem; font-weight: 700; flex: 1; }
+    .topic-check {
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: all .2s; font-size: .75rem;
+    }
+    .topic-card.done .topic-check { background: var(--green); border-color: var(--green); color: #fff; }
+    .topic-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .tag {
+      font-size: .68rem; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+      border: 1px solid transparent;
+    }
+
+    /* Difficulty */
+    .diff-easy { background: rgba(16,185,129,.15); color: var(--green); border-color: rgba(16,185,129,.3); }
+    .diff-medium { background: rgba(245,158,11,.15); color: var(--orange); border-color: rgba(245,158,11,.3); }
+    .diff-hard { background: rgba(239,68,68,.15); color: var(--red); border-color: rgba(239,68,68,.3); }
+
+    /* ═══════════════════════════════════════
+       PATTERNS SECTION
+    ═══════════════════════════════════════ */
+    #patterns .patterns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .pattern-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; transition: border-color .2s, transform .2s, box-shadow .2s;
+      cursor: pointer;
+    }
+    .pattern-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow); }
+    .pattern-card.done { border-color: var(--green); }
+    .pattern-card-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 20px; border-bottom: 1px solid var(--border);
+    }
+    .pattern-icon { font-size: 1.8rem; }
+    .pattern-info { flex: 1; }
+    .pattern-name { font-size: 1rem; font-weight: 800; }
+    .pattern-meta { font-size: .78rem; color: var(--text3); margin-top: 2px; }
+    .pattern-card-body { padding: 16px 20px; }
+    .pattern-desc { font-size: .88rem; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+    .pattern-problems { display: flex; flex-wrap: wrap; gap: 6px; }
+    .prob-chip {
+      font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 10px;
+      background: var(--card2); border: 1px solid var(--border); color: var(--text2);
+    }
+    .pattern-check-btn {
+      margin-top: 14px; display: flex; align-items: center; gap: 8px;
+      font-size: .82rem; font-weight: 700; padding: 8px 16px; border-radius: 20px;
+      border: 1.5px solid var(--border); color: var(--text2); transition: all .2s;
+    }
+    .pattern-check-btn:hover { border-color: var(--green); color: var(--green); }
+    .pattern-card.done .pattern-check-btn { background: rgba(16,185,129,.1); border-color: var(--green); color: var(--green); }
+
+    /* ═══════════════════════════════════════
+       COMPANY GUIDE
+    ═══════════════════════════════════════ */
+    #companies .companies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .company-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .company-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--accent); }
+    .company-header {
+      padding: 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .company-logo { font-size: 2rem; }
+    .company-name { font-size: 1.1rem; font-weight: 800; }
+    .company-level { font-size: .75rem; color: var(--text3); }
+    .company-body { padding: 0 20px 20px; }
+    .company-focus { font-size: .85rem; color: var(--text2); margin-bottom: 14px; }
+    .company-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .company-topic-chip {
+      font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 10px;
+      background: var(--card2); border: 1px solid var(--border); color: var(--text2);
+    }
+    .company-tips { font-size: .82rem; color: var(--text2); line-height: 1.7; }
+    .company-tips li { padding-left: 16px; position: relative; margin-bottom: 4px; }
+    .company-tips li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+
+    /* ═══════════════════════════════════════
+       RESOURCES
+    ═══════════════════════════════════════ */
+    #resources .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .resource-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px; transition: transform .2s, border-color .2s;
+    }
+    .resource-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .resource-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .resource-name { font-size: .95rem; font-weight: 800; margin-bottom: 6px; }
+    .resource-desc { font-size: .82rem; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+    .resource-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* ═══════════════════════════════════════
+       GLOBAL PROGRESS BAR
+    ═══════════════════════════════════════ */
+    #globalProgress {
+      position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow);
+      min-width: 220px;
+    }
+    .gp-title { font-size: .78rem; font-weight: 700; color: var(--text3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+    .gp-bar-wrap { background: var(--card2); border-radius: 6px; height: 8px; overflow: hidden; }
+    .gp-bar { height: 100%; background: linear-gradient(90deg,#7c3aed,#06b6d4); border-radius: 6px; transition: width .4s ease; }
+    .gp-label { font-size: .88rem; font-weight: 800; color: var(--green); margin-top: 6px; }
+
+    /* ═══════════════════════════════════════
+       SEARCH OVERLAY
+    ═══════════════════════════════════════ */
+    .hidden { display: none !important; }
+    .highlight { background: rgba(124,58,237,.25); border-radius: 3px; }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    footer {
+      text-align: center; padding: 40px 20px;
+      border-top: 1px solid var(--border); color: var(--text3); font-size: .85rem;
+    }
+    footer span { color: var(--accent); }
+
+    /* ═══════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════ */
+    @keyframes fadeDown {
+      from { opacity:0; transform: translateY(-20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes bounce {
+      0%,100% { transform: rotate(45deg) translateY(0); }
+      50%      { transform: rotate(45deg) translateY(6px); }
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-12px); }
+    }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(124,58,237,.4); }
+      70%  { box-shadow: 0 0 0 12px rgba(124,58,237,0); }
+      100% { box-shadow: 0 0 0 0 rgba(124,58,237,0); }
+    }
+    .animate-in {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .animate-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .timeline::before { left: 28px; }
+      .phase { flex-direction: column !important; padding-left: 72px; gap: 20px; }
+      .phase-dot { left: 28px; top: 40px; transform: translateX(-50%); }
+      .phase-content { max-width: 100%; }
+      #navbar { padding: 10px 16px; }
+      .nav-links { display: none; }
+      #searchBox { width: 130px; }
+      #globalProgress { bottom: 16px; right: 16px; min-width: 180px; }
+    }
+    @media (max-width: 600px) {
+      .hero-stats { gap: 16px; }
+      .stat-card { padding: 14px 18px; }
+      .patterns-grid, .companies-grid, .resources-grid { grid-template-columns: 1fr !important; }
+    }
+
+    /* ═══════════════════════════════════════
+       CATEGORY COLORS
+    ═══════════════════════════════════════ */
+    .cat-purple { background: rgba(124,58,237,.15); color: #a78bfa; border-color: rgba(124,58,237,.3); }
+    .cat-blue   { background: rgba(59,130,246,.15); color: #60a5fa; border-color: rgba(59,130,246,.3); }
+    .cat-cyan   { background: rgba(6,182,212,.15);  color: #22d3ee;  border-color: rgba(6,182,212,.3); }
+    .cat-green  { background: rgba(16,185,129,.15); color: #34d399; border-color: rgba(16,185,129,.3); }
+    .cat-orange { background: rgba(245,158,11,.15); color: #fbbf24; border-color: rgba(245,158,11,.3); }
+    .cat-red    { background: rgba(239,68,68,.15);  color: #f87171;  border-color: rgba(239,68,68,.3); }
+    .cat-pink   { background: rgba(236,72,153,.15); color: #f472b6; border-color: rgba(236,72,153,.3); }
+    .cat-teal   { background: rgba(20,184,166,.15); color: #2dd4bf; border-color: rgba(20,184,166,.3); }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-brand">⚡ DSA Roadmap</div>
+  <div class="nav-links">
+    <a href="#roadmap">Roadmap</a>
+    <a href="#patterns">Patterns</a>
+    <a href="#companies">Companies</a>
+    <a href="#resources">Resources</a>
+  </div>
+  <div class="nav-right">
+    <input type="search" id="searchBox" placeholder="🔍 Search topics…" />
+    <span id="progressPill">0% done</span>
+    <button id="themeBtn" title="Toggle theme" aria-label="Toggle theme"></button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="particles"></canvas>
+  <div class="hero-badge">🚀 Complete Beginner to Expert</div>
+  <h1 class="hero-title">DSA Pattern<br/>Roadmap</h1>
+  <p class="hero-sub">Master Data Structures & Algorithms from scratch to landing your dream job at FAANG & top tech companies. Interactive, visual, and track your progress.</p>
+  <div class="hero-stats">
+    <div class="stat-card">
+      <div class="stat-num">150+</div>
+      <div class="stat-label">Topics Covered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">18</div>
+      <div class="stat-label">Key Patterns</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Learning Phases</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">12+</div>
+      <div class="stat-label">Company Guides</div>
+    </div>
+  </div>
+  <div class="hero-cta">
+    <a href="#roadmap" class="btn-primary">Start Your Journey →</a>
+    <a href="#patterns" class="btn-secondary">View Patterns</a>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-arrow"></div>
+    scroll down
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+<main>
+
+  <!-- ── ROADMAP ── -->
+  <section id="roadmap">
+    <div class="section-header animate-in">
+      <div class="section-tag cat-purple">📍 Phase-by-Phase</div>
+      <h2 class="section-title">Your Learning Roadmap</h2>
+      <p class="section-sub">Follow the phases in order. Check off topics as you master them — progress is saved automatically.</p>
+    </div>
+
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <!-- ── PATTERNS ── -->
+  <section id="patterns">
+    <div class="section-header animate-in">
+      <div class="section-tag cat-cyan">🔷 Coding Patterns</div>
+      <h2 class="section-title">Master the Patterns</h2>
+      <p class="section-sub">These 18 patterns cover 90% of algorithm interview questions. Learn the pattern once, apply it everywhere.</p>
+    </div>
+    <div class="patterns-grid" id="patternsGrid"></div>
+  </section>
+
+  <!-- ── COMPANIES ── -->
+  <section id="companies">
+    <div class="section-header animate-in">
+      <div class="section-tag cat-orange">🏢 Company Guides</div>
+      <h2 class="section-title">Crack Top Tech Companies</h2>
+      <p class="section-sub">Each company has a unique interview style. Know what to focus on before you apply.</p>
+    </div>
+    <div class="companies-grid" id="companiesGrid"></div>
+  </section>
+
+  <!-- ── RESOURCES ── -->
+  <section id="resources">
+    <div class="section-header animate-in">
+      <div class="section-tag cat-green">📚 Resources</div>
+      <h2 class="section-title">Best Learning Resources</h2>
+      <p class="section-sub">Curated books, platforms, and channels to accelerate your preparation.</p>
+    </div>
+    <div class="resources-grid" id="resourcesGrid"></div>
+  </section>
+
+</main>
+
+<!-- Global Progress Widget -->
+<div id="globalProgress">
+  <div class="gp-title">🎯 Overall Progress</div>
+  <div class="gp-bar-wrap"><div class="gp-bar" id="gpBar" style="width:0%"></div></div>
+  <div class="gp-label" id="gpLabel">0 / 0 topics</div>
+</div>
+
+<footer>
+  <p>Built with ❤️ for aspiring engineers | <span>DSA Roadmap</span> — Beginner to Expert</p>
+  <p style="margin-top:8px; font-size:.78rem;">Check off topics as you complete them. Progress is saved in your browser.</p>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const PHASES = [
+  {
+    id: 'phase1',
+    emoji: '🌱',
+    color: '#10b981',
+    label: 'Phase 1 — Foundation',
+    labelClass: 'cat-green',
+    title: 'Programming & Math Basics',
+    duration: '2–4 weeks',
+    desc: 'Build the bedrock. You need solid programming fundamentals and basic math before touching DSA.',
+    topics: [
+      { id: 'p1_complexity',  icon: '⏱', name: 'Time & Space Complexity',   diff: 'easy',   tags: ['Big-O', 'Analysis'] },
+      { id: 'p1_arrays',      icon: '📦', name: 'Arrays & Basic Operations', diff: 'easy',   tags: ['Core'] },
+      { id: 'p1_strings',     icon: '🔤', name: 'Strings & Manipulation',    diff: 'easy',   tags: ['Core'] },
+      { id: 'p1_loops',       icon: '🔄', name: 'Loops & Iteration',         diff: 'easy',   tags: ['Logic'] },
+      { id: 'p1_functions',   icon: '🧩', name: 'Functions & Recursion Intro',diff: 'easy',  tags: ['Logic'] },
+      { id: 'p1_math',        icon: '➗', name: 'Math: Mod, GCD, Primes',    diff: 'easy',   tags: ['Math'] },
+      { id: 'p1_bits',        icon: '🔢', name: 'Bit Manipulation Basics',   diff: 'medium', tags: ['Bits'] },
+      { id: 'p1_2d',          icon: '📊', name: '2D Arrays & Matrices',      diff: 'easy',   tags: ['Arrays'] },
+    ]
+  },
+  {
+    id: 'phase2',
+    emoji: '🏗',
+    color: '#3b82f6',
+    label: 'Phase 2 — Core Data Structures',
+    labelClass: 'cat-blue',
+    title: 'Essential Data Structures',
+    duration: '4–6 weeks',
+    desc: 'Master the fundamental data structures. These are your tools — know them inside out.',
+    topics: [
+      { id: 'p2_ll',        icon: '⛓', name: 'Linked Lists',            diff: 'medium', tags: ['Linear', 'Pointers'] },
+      { id: 'p2_stack',     icon: '📚', name: 'Stacks',                  diff: 'easy',   tags: ['Linear', 'LIFO'] },
+      { id: 'p2_queue',     icon: '🚶', name: 'Queues & Deques',         diff: 'easy',   tags: ['Linear', 'FIFO'] },
+      { id: 'p2_hashmap',   icon: '🗺', name: 'Hash Maps & Hash Sets',   diff: 'medium', tags: ['Hashing'] },
+      { id: 'p2_tree',      icon: '🌳', name: 'Binary Trees',            diff: 'medium', tags: ['Trees', 'Hierarchical'] },
+      { id: 'p2_bst',       icon: '🔍', name: 'Binary Search Trees',     diff: 'medium', tags: ['Trees', 'Search'] },
+      { id: 'p2_heap',      icon: '⛰', name: 'Heaps / Priority Queues', diff: 'medium', tags: ['Trees', 'Priority'] },
+      { id: 'p2_trie',      icon: '🌐', name: 'Tries (Prefix Trees)',    diff: 'hard',   tags: ['Trees', 'Strings'] },
+      { id: 'p2_graph',     icon: '🕸', name: 'Graphs (Adj. List/Mat.)', diff: 'hard',   tags: ['Graph', 'Non-linear'] },
+      { id: 'p2_set',       icon: '🗂', name: 'Sets & Multisets',        diff: 'easy',   tags: ['Hashing'] },
+      { id: 'p2_segment',   icon: '📐', name: 'Segment Trees',           diff: 'hard',   tags: ['Advanced'] },
+      { id: 'p2_bit_tree',  icon: '🌲', name: 'Fenwick / BIT',           diff: 'hard',   tags: ['Advanced'] },
+    ]
+  },
+  {
+    id: 'phase3',
+    emoji: '⚙️',
+    color: '#7c3aed',
+    label: 'Phase 3 — Core Algorithms',
+    labelClass: 'cat-purple',
+    title: 'Searching, Sorting & Core Algos',
+    duration: '4–6 weeks',
+    desc: 'Learn the classic algorithms. These appear in interviews directly or as building blocks.',
+    topics: [
+      { id: 'p3_bs',       icon: '🔎', name: 'Binary Search',         diff: 'medium', tags: ['Search'] },
+      { id: 'p3_bubble',   icon: '🫧', name: 'Bubble / Selection Sort', diff: 'easy', tags: ['Sort'] },
+      { id: 'p3_merge',    icon: '🔀', name: 'Merge Sort',             diff: 'medium', tags: ['Sort', 'D&C'] },
+      { id: 'p3_quick',    icon: '⚡', name: 'Quick Sort',             diff: 'medium', tags: ['Sort', 'D&C'] },
+      { id: 'p3_heap_sort',icon: '⛰', name: 'Heap Sort',              diff: 'medium', tags: ['Sort'] },
+      { id: 'p3_counting', icon: '🧮', name: 'Counting / Radix Sort',  diff: 'medium', tags: ['Sort', 'Linear'] },
+      { id: 'p3_bfs',      icon: '🌊', name: 'BFS',                    diff: 'medium', tags: ['Graph', 'Tree'] },
+      { id: 'p3_dfs',      icon: '🏔', name: 'DFS',                    diff: 'medium', tags: ['Graph', 'Tree'] },
+      { id: 'p3_rec',      icon: '🔁', name: 'Recursion & Memoization', diff: 'medium', tags: ['Technique'] },
+      { id: 'p3_divide',   icon: '✂️', name: 'Divide & Conquer',        diff: 'medium', tags: ['Technique'] },
+      { id: 'p3_greedy',   icon: '🤑', name: 'Greedy Algorithms',      diff: 'medium', tags: ['Technique'] },
+      { id: 'p3_backtrack',icon: '↩️', name: 'Backtracking',            diff: 'hard',   tags: ['Technique'] },
+    ]
+  },
+  {
+    id: 'phase4',
+    emoji: '🧠',
+    color: '#f59e0b',
+    label: 'Phase 4 — Advanced Algorithms',
+    labelClass: 'cat-orange',
+    title: 'Dynamic Programming & Graph Algorithms',
+    duration: '6–8 weeks',
+    desc: 'The big leagues. DP and advanced graph algorithms separate good candidates from great ones.',
+    topics: [
+      { id: 'p4_dp_1d',     icon: '📏', name: 'DP — 1D (Fibonacci, Climbing)', diff: 'medium', tags: ['DP'] },
+      { id: 'p4_dp_2d',     icon: '📐', name: 'DP — 2D (Grid, LCS)',            diff: 'hard',   tags: ['DP'] },
+      { id: 'p4_dp_knap',   icon: '🎒', name: 'DP — 0/1 Knapsack',              diff: 'hard',   tags: ['DP'] },
+      { id: 'p4_dp_unbnd',  icon: '♾️', name: 'DP — Unbounded Knapsack',        diff: 'hard',   tags: ['DP'] },
+      { id: 'p4_dp_lcs',    icon: '🔗', name: 'DP — LCS & Edit Distance',       diff: 'hard',   tags: ['DP', 'Strings'] },
+      { id: 'p4_dp_subseq', icon: '📊', name: 'DP — Subsequences & Subsets',    diff: 'hard',   tags: ['DP'] },
+      { id: 'p4_dp_trees',  icon: '🌳', name: 'DP — Trees & Intervals',         diff: 'hard',   tags: ['DP'] },
+      { id: 'p4_dijkstra',  icon: '🗺', name: "Dijkstra's Algorithm",            diff: 'hard',   tags: ['Graph', 'Shortest Path'] },
+      { id: 'p4_bellman',   icon: '🛤', name: 'Bellman-Ford',                   diff: 'hard',   tags: ['Graph', 'Shortest Path'] },
+      { id: 'p4_floyd',     icon: '🌐', name: 'Floyd-Warshall',                 diff: 'hard',   tags: ['Graph', 'All-Pairs'] },
+      { id: 'p4_union',     icon: '🤝', name: 'Union-Find / DSU',               diff: 'hard',   tags: ['Graph', 'Connectivity'] },
+      { id: 'p4_mst',       icon: '🌲', name: "Prim's & Kruskal's MST",         diff: 'hard',   tags: ['Graph', 'MST'] },
+      { id: 'p4_topo',      icon: '📋', name: 'Topological Sort',               diff: 'hard',   tags: ['Graph', 'DAG'] },
+      { id: 'p4_scc',       icon: '🔄', name: 'Strongly Connected Components',  diff: 'hard',   tags: ['Graph'] },
+    ]
+  },
+  {
+    id: 'phase5',
+    emoji: '👑',
+    color: '#ec4899',
+    label: 'Phase 5 — Expert & Competitive',
+    labelClass: 'cat-pink',
+    title: 'Expert Level & System Design',
+    duration: '4–8 weeks',
+    desc: 'Push beyond LeetCode. System design, bit tricks, and competitive programming techniques for top-tier roles.',
+    topics: [
+      { id: 'p5_bitmask',  icon: '🎭', name: 'Bitmask DP',                  diff: 'hard',   tags: ['DP', 'Bits'] },
+      { id: 'p5_mono',     icon: '📉', name: 'Monotonic Stack / Queue',      diff: 'hard',   tags: ['Stack', 'Queue'] },
+      { id: 'p5_trie_adv', icon: '🌐', name: 'Trie — Advanced Applications', diff: 'hard',   tags: ['Trie'] },
+      { id: 'p5_seg_adv',  icon: '📐', name: 'Segment Tree — Range Updates', diff: 'hard',   tags: ['Segment Tree'] },
+      { id: 'p5_sqrt',     icon: '√', name: 'Square Root Decomposition',    diff: 'hard',   tags: ['Optimization'] },
+      { id: 'p5_math_adv', icon: '🔢', name: 'Number Theory & Combinatorics',diff: 'hard',   tags: ['Math'] },
+      { id: 'p5_geo',      icon: '📐', name: 'Computational Geometry',       diff: 'hard',   tags: ['Geometry'] },
+      { id: 'p5_str_adv',  icon: '🔤', name: 'KMP / Z / Rabin-Karp',        diff: 'hard',   tags: ['Strings'] },
+      { id: 'p5_sysdes',   icon: '🏗', name: 'System Design Basics',         diff: 'medium', tags: ['Design'] },
+      { id: 'p5_lld',      icon: '🧩', name: 'Low-Level Design (OOP/OOD)',   diff: 'medium', tags: ['Design'] },
+      { id: 'p5_behavr',   icon: '🗣', name: 'Behavioral Interview Prep',    diff: 'easy',   tags: ['Soft Skills'] },
+      { id: 'p5_mock',     icon: '🎯', name: 'Mock Interviews & Contests',   diff: 'medium', tags: ['Practice'] },
+    ]
+  }
+];
+
+const PATTERNS = [
+  {
+    id: 'pat_sliding',
+    icon: '🪟',
+    name: 'Sliding Window',
+    category: 'Arrays / Strings',
+    color: 'cat-blue',
+    desc: 'Maintain a window of elements that slides over the input. Reduces O(n²) brute force to O(n) for contiguous subarray/substring problems.',
+    problems: ['Max Sum Subarray of Size K', 'Longest Substring without Repeating', 'Minimum Window Substring', 'Fruits into Baskets', 'Permutation in String'],
+  },
+  {
+    id: 'pat_two_ptr',
+    icon: '👆👆',
+    name: 'Two Pointers',
+    category: 'Arrays / Strings',
+    color: 'cat-cyan',
+    desc: 'Use two pointers moving toward each other or in the same direction to avoid nested loops. Perfect for sorted arrays and pair problems.',
+    problems: ['Two Sum (Sorted)', 'Three Sum', 'Container With Most Water', 'Trapping Rain Water', 'Remove Duplicates'],
+  },
+  {
+    id: 'pat_fast_slow',
+    icon: '🐢🐇',
+    name: 'Fast & Slow Pointers',
+    category: 'Linked List',
+    color: 'cat-purple',
+    desc: 'Floyd\'s cycle detection. Use two pointers at different speeds to detect cycles, find middle nodes, or determine if a path has a cycle.',
+    problems: ['Linked List Cycle', 'Middle of Linked List', 'Happy Number', 'Find Duplicate Number', 'Palindrome Linked List'],
+  },
+  {
+    id: 'pat_merge_intervals',
+    icon: '📏',
+    name: 'Merge Intervals',
+    category: 'Arrays',
+    color: 'cat-orange',
+    desc: 'Deal with overlapping intervals. Sort by start time, then merge, insert, or check overlap. Common in scheduling and event problems.',
+    problems: ['Merge Intervals', 'Insert Interval', 'Intervals Intersection', 'Non-overlapping Intervals', 'Meeting Rooms II'],
+  },
+  {
+    id: 'pat_cyclic',
+    icon: '🔄',
+    name: 'Cyclic Sort',
+    category: 'Arrays',
+    color: 'cat-green',
+    desc: 'When numbers in range [1, n] are given, place each number at its correct index in one pass. O(n) time, O(1) space.',
+    problems: ['Cyclic Sort', 'Find Missing Number', 'Find All Duplicates', 'Find Corrupt Pair', 'First K Missing Positives'],
+  },
+  {
+    id: 'pat_reverse_ll',
+    icon: '↩️',
+    name: 'In-place Reversal (LL)',
+    category: 'Linked List',
+    color: 'cat-red',
+    desc: 'Reverse a linked list or a sub-list in-place without extra memory. Master pointer manipulation.',
+    problems: ['Reverse Linked List', 'Reverse Sublist', 'Reverse Every K Elements', 'Rotate List', 'Reverse Alternating K'],
+  },
+  {
+    id: 'pat_tree_bfs',
+    icon: '🌊',
+    name: 'Tree BFS (Level Order)',
+    category: 'Trees',
+    color: 'cat-blue',
+    desc: 'Use a queue to traverse trees level by level. Great for level-order operations, min-depth, connect levels, and zigzag traversal.',
+    problems: ['Level Order Traversal', 'Zigzag Level Order', 'Level Averages', 'Min Depth of Binary Tree', 'Connect Level Order Siblings'],
+  },
+  {
+    id: 'pat_tree_dfs',
+    icon: '🏔',
+    name: 'Tree DFS',
+    category: 'Trees',
+    color: 'cat-teal',
+    desc: 'Recursively (or with a stack) explore tree paths. Handle pre/in/post-order traversals and path-sum problems.',
+    problems: ['Path Sum', 'All Paths for Sum', 'Sum of Path Numbers', 'Count Paths for Sum', 'Diameter of Binary Tree'],
+  },
+  {
+    id: 'pat_two_heaps',
+    icon: '⛰⛰',
+    name: 'Two Heaps',
+    category: 'Heaps',
+    color: 'cat-orange',
+    desc: 'Use a max-heap for the lower half and min-heap for the upper half to efficiently track medians or balance partitions.',
+    problems: ['Find Median from Data Stream', 'Sliding Window Median', 'IPO (Capital & Profits)', 'Maximize Capital'],
+  },
+  {
+    id: 'pat_subsets',
+    icon: '🎲',
+    name: 'Subsets / Backtracking',
+    category: 'Backtracking',
+    color: 'cat-purple',
+    desc: 'BFS or recursion to generate all subsets, permutations, or combinations. Use backtracking to prune impossible paths.',
+    problems: ['Subsets', 'Subsets with Duplicates', 'Permutations', 'Combinations', 'Letter Combinations of Phone Number'],
+  },
+  {
+    id: 'pat_mod_bs',
+    icon: '🔎',
+    name: 'Modified Binary Search',
+    category: 'Arrays',
+    color: 'cat-cyan',
+    desc: 'Apply binary search beyond sorted arrays — on the answer space, rotated arrays, or matrices. Identify the monotonic property.',
+    problems: ['Order-agnostic Binary Search', 'Bitonic Array Max', 'Search in Rotated Array', 'Find Range of Target', 'Search in Matrix'],
+  },
+  {
+    id: 'pat_top_k',
+    icon: '🏆',
+    name: 'Top K Elements',
+    category: 'Heaps',
+    color: 'cat-orange',
+    desc: 'Use a min-heap of size K to efficiently find the top/bottom K elements without fully sorting the array.',
+    problems: ['K Largest Elements', 'K Closest Points to Origin', 'Top K Frequent Elements', 'K Closest Numbers', 'Frequency Sort'],
+  },
+  {
+    id: 'pat_kway',
+    icon: '🌊',
+    name: 'K-way Merge',
+    category: 'Heaps',
+    color: 'cat-teal',
+    desc: 'Merge K sorted arrays/lists using a min-heap. Efficiently find the smallest element across K sorted sources.',
+    problems: ['Merge K Sorted Lists', 'Kth Smallest in M Sorted Lists', 'Smallest Range Covering K Lists', 'K Pairs with Smallest Sums'],
+  },
+  {
+    id: 'pat_topo',
+    icon: '📋',
+    name: 'Topological Sort',
+    category: 'Graphs',
+    color: 'cat-red',
+    desc: 'Linear ordering of vertices with dependencies. Use Kahn\'s BFS algorithm or DFS for course scheduling and dependency resolution.',
+    problems: ['Topological Sort', 'Tasks Scheduling', 'Tasks Scheduling Order', 'All Tasks Scheduling Orders', 'Alien Dictionary'],
+  },
+  {
+    id: 'pat_dp',
+    icon: '🧠',
+    name: 'Dynamic Programming',
+    category: '0/1 Knapsack',
+    color: 'cat-pink',
+    desc: 'Break problems into subproblems. Identify base cases and recurrences. Memoization (top-down) or tabulation (bottom-up).',
+    problems: ['0/1 Knapsack', 'Equal Subset Sum', 'Subset Sum', 'Minimum Subset Difference', 'Target Sum'],
+  },
+  {
+    id: 'pat_mono_stack',
+    icon: '📉',
+    name: 'Monotonic Stack',
+    category: 'Stack',
+    color: 'cat-blue',
+    desc: 'Maintain a stack where elements are always in monotonically increasing or decreasing order. O(n) for next-greater/smaller problems.',
+    problems: ['Next Greater Element', 'Daily Temperatures', 'Trapping Rain Water', 'Largest Rectangle in Histogram', 'Sum of Subarray Minimums'],
+  },
+  {
+    id: 'pat_prefix',
+    icon: '➕',
+    name: 'Prefix Sum / Difference Array',
+    category: 'Arrays',
+    color: 'cat-green',
+    desc: 'Precompute cumulative sums for O(1) range queries. Difference arrays enable O(1) range updates.',
+    problems: ['Range Sum Query', 'Subarray Sum Equals K', 'Product of Array Except Self', 'Continuous Subarray Sum', '2D Range Sum'],
+  },
+  {
+    id: 'pat_union_find',
+    icon: '🤝',
+    name: 'Union-Find (DSU)',
+    category: 'Graphs',
+    color: 'cat-purple',
+    desc: 'Disjoint Set Union for efficiently grouping elements and detecting cycles. Use path compression and union by rank for near O(1) ops.',
+    problems: ['Number of Islands', 'Graph Valid Tree', 'Accounts Merge', 'Redundant Connection', 'Evaluate Division'],
+  },
+];
+
+const COMPANIES = [
+  {
+    logo: '🍎', name: 'Apple', level: 'FAANG', headerColor: '#374151',
+    focus: 'Clean code, iOS patterns, system design, and practical problem solving. Emphasis on real-world applications.',
+    topics: ['Arrays', 'Trees', 'Graphs', 'System Design', 'OOP', 'Concurrency'],
+    tips: ['Focus on code quality & readability', 'System Design rounds are critical', 'Practice mobile/distributed systems', 'Know Core Data Structures deeply'],
+  },
+  {
+    logo: '🌐', name: 'Google', level: 'FAANG', headerColor: '#1e3a5f',
+    focus: 'Hard algorithm problems, scalability, and abstract thinking. Heavy emphasis on data structures and optimization.',
+    topics: ['Dynamic Programming', 'Graphs', 'String Algorithms', 'System Design', 'Probability'],
+    tips: ['Practice LeetCode Hard problems', 'Think out loud — communication matters', 'Know time/space complexity cold', 'Distributed systems design is key'],
+  },
+  {
+    logo: '📦', name: 'Amazon', level: 'FAANG', headerColor: '#1a2e1a',
+    focus: 'Leadership Principles are as important as coding. OOP design, arrays, trees, and system design.',
+    topics: ['Trees', 'Arrays', 'System Design', 'OOP Design', 'BFS/DFS'],
+    tips: ['Master all 16 Leadership Principles', 'Use STAR format for behavioral', 'Practice LLD (Low Level Design)', 'Focus on scalability & cost'],
+  },
+  {
+    logo: '👥', name: 'Meta (Facebook)', level: 'FAANG', headerColor: '#0a2440',
+    focus: 'Graph problems (social network), arrays, strings, and binary trees. Speed and accuracy are crucial.',
+    topics: ['Graphs', 'BFS/DFS', 'Dynamic Programming', 'Arrays', 'Strings'],
+    tips: ['35–45 min per problem — be fast', 'Graph problems are very common', 'Review recursion and trees deeply', 'Practice on Meta-specific patterns'],
+  },
+  {
+    logo: '🎬', name: 'Netflix', level: 'Top Tech', headerColor: '#1a0505',
+    focus: 'System design heavily weighted. Distributed systems, microservices, and chaos engineering concepts.',
+    topics: ['System Design', 'Distributed Systems', 'APIs', 'Performance', 'Algorithms'],
+    tips: ['System design is 50% of the loop', 'Know CAP theorem & eventual consistency', 'Study Netflix tech blog', 'Focus on reliability & scale'],
+  },
+  {
+    logo: '☁️', name: 'Microsoft', level: 'Top Tech', headerColor: '#0a1628',
+    focus: 'Balanced mix of coding and design. Azure/cloud problems, OOP, and collaborative problem solving.',
+    topics: ['Trees', 'Arrays', 'OOP Design', 'Graphs', 'System Design', 'DP'],
+    tips: ['Growth mindset is valued highly', 'Expect 4–5 coding rounds', 'Know Windows/Azure scenarios', 'Practice system design patterns'],
+  },
+  {
+    logo: '🚗', name: 'Uber', level: 'Top Tech', headerColor: '#1a1a00',
+    focus: 'Real-time systems, geo-spatial algorithms, graphs (routes), and backend system design.',
+    topics: ['Graphs', 'Geo Algorithms', 'System Design', 'Real-time Systems', 'Databases'],
+    tips: ['Study ride-matching algorithms', 'Graph/shortest path are crucial', 'Real-time data streaming knowledge', 'Know NoSQL & SQL trade-offs'],
+  },
+  {
+    logo: '🏠', name: 'Airbnb', level: 'Top Tech', headerColor: '#1a0f0f',
+    focus: 'Strong emphasis on system design, data modeling, and elegant code. Culture-fit matters a lot.',
+    topics: ['System Design', 'APIs', 'DP', 'Trees', 'Data Modeling'],
+    tips: ['Code clarity > cleverness', 'Behavioral & culture rounds are long', 'Think about product impact', 'Study distributed booking systems'],
+  },
+  {
+    logo: '💼', name: 'LinkedIn', level: 'Top Tech', headerColor: '#0a1e2a',
+    focus: 'Graph algorithms (social graphs), recommender systems, and practical system design.',
+    topics: ['Graphs', 'System Design', 'DP', 'Sorting', 'Machine Learning Basics'],
+    tips: ['Social graph algorithms are key', 'Feed ranking/recommendation systems', 'Know MapReduce/Spark basics', 'API design & rate limiting'],
+  },
+  {
+    logo: '💻', name: 'Atlassian', level: 'Mid-Size', headerColor: '#001929',
+    focus: 'Values-based culture. Algorithmic thinking, clean code, and collaborative design.',
+    topics: ['Arrays', 'Strings', 'Graphs', 'OOP Design', 'Trees'],
+    tips: ['Values alignment is critical', 'Focus on real-world problem framing', 'Know version control internals', 'Pair programming round expected'],
+  },
+  {
+    logo: '💬', name: 'Stripe', level: 'Fintech', headerColor: '#0a0a1a',
+    focus: 'High quality code, API design, systems that handle money. Focus on correctness and edge cases.',
+    topics: ['System Design', 'APIs', 'Distributed Systems', 'Databases', 'Security'],
+    tips: ['Write production-quality code', 'API design round is unique', 'Financial system edge cases', 'Know ACID properties & transactions'],
+  },
+  {
+    logo: '🔴', name: 'Adobe', level: 'Top Tech', headerColor: '#1a0505',
+    focus: 'Creative tech + algorithms. DP, trees, graphs, and some computer graphics fundamentals.',
+    topics: ['DP', 'Trees', 'Graphs', 'OOP Design', 'Strings', 'Geometry'],
+    tips: ['OOP design rounds are common', 'Know Image processing basics', 'LeetCode medium level is typical', 'Focus on creative problem solving'],
+  },
+];
+
+const RESOURCES = [
+  { icon: '📗', name: 'LeetCode', desc: 'The gold standard for interview prep. 2000+ problems, company tags, and discussion forums.', tags: ['Practice', 'Free+Premium'] },
+  { icon: '🧑‍💻', name: 'NeetCode.io', desc: 'Curated 150 LeetCode problems with video explanations organized by pattern. Highly recommended.', tags: ['Roadmap', 'Free'] },
+  { icon: '📘', name: 'Grokking the Coding Interview', desc: 'Pattern-based approach to solving coding problems. Best for learning 16 core patterns.', tags: ['Course', 'Paid'] },
+  { icon: '📚', name: 'CLRS (Introduction to Algorithms)', desc: 'The definitive textbook on algorithms. Dense but comprehensive — great reference material.', tags: ['Book', 'Theory'] },
+  { icon: '🎥', name: 'Abdul Bari (YouTube)', desc: 'Excellent algorithm explanations with animations. Best for visual learners covering all DSA topics.', tags: ['Video', 'Free'] },
+  { icon: '🎓', name: 'CS50 (Harvard)', desc: 'Free world-class computer science fundamentals course. Best starting point for complete beginners.', tags: ['Course', 'Free'] },
+  { icon: '⚔️', name: 'Codeforces', desc: 'Competitive programming platform with contests. Great for sharpening algorithmic thinking beyond interviews.', tags: ['Competitive', 'Free'] },
+  { icon: '📙', name: 'Cracking the Coding Interview', desc: 'Gayle Laakmann McDowell\'s classic book. 189 problems with detailed solutions and tips.', tags: ['Book', 'Paid'] },
+  { icon: '🏗', name: 'System Design Primer', desc: 'GitHub repository with comprehensive system design resources. Essential for senior-level interviews.', tags: ['System Design', 'Free'] },
+  { icon: '🧩', name: 'HackerRank', desc: 'Beginner-friendly platform with structured tracks for domains like SQL, Python, Algorithms.', tags: ['Practice', 'Free'] },
+  { icon: '🌐', name: 'Visualgo.net', desc: 'Visualize data structures and algorithms with animations. Helps internalize how algorithms work step by step.', tags: ['Visual', 'Free'] },
+  { icon: '💡', name: 'Pramp', desc: 'Peer-to-peer mock interview platform. Practice with other developers and get real feedback.', tags: ['Mock Interview', 'Free'] },
+];
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+const STORAGE_KEY = 'dsa-roadmap-progress-v2';
+let progress = {};
+try { progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(err) { console.warn('DSA Roadmap: failed to parse saved progress, starting fresh.', err); }
+
+function saveProgress() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+}
+
+function countTopics() {
+  let total = 0, done = 0;
+  PHASES.forEach(p => p.topics.forEach(t => {
+    total++;
+    if (progress[t.id]) done++;
+  }));
+  PATTERNS.forEach(p => {
+    total++;
+    if (progress[p.id]) done++;
+  });
+  return { total, done };
+}
+
+function updateProgress() {
+  const { total, done } = countTopics();
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressPill').textContent = `${pct}% done`;
+  document.getElementById('gpBar').style.width = `${pct}%`;
+  document.getElementById('gpLabel').textContent = `${done} / ${total} topics`;
+}
+
+function diffClass(d) {
+  return d === 'easy' ? 'diff-easy' : d === 'medium' ? 'diff-medium' : 'diff-hard';
+}
+
+/* ═══════════════════════════════════════
+   RENDER TIMELINE
+═══════════════════════════════════════ */
+function renderTimeline() {
+  const container = document.getElementById('timeline');
+
+  PHASES.forEach((phase, idx) => {
+    const el = document.createElement('div');
+    el.className = 'phase animate-in';
+
+    // Dot
+    const dot = document.createElement('div');
+    dot.className = 'phase-dot';
+    dot.style.background = phase.color;
+    dot.textContent = phase.emoji;
+    el.appendChild(dot);
+
+    // Spacer (for alignment)
+    const spacer = document.createElement('div');
+    spacer.style.flex = '1';
+    el.appendChild(spacer);
+
+    // Content
+    const content = document.createElement('div');
+    content.className = 'phase-content';
+
+    const completedCount = phase.topics.filter(t => progress[t.id]).length;
+
+    content.innerHTML = `
+      <div class="phase-label tag ${phase.labelClass}">${phase.label}</div>
+      <h3 class="phase-title">${phase.title}</h3>
+      <p class="phase-desc">${phase.desc}</p>
+      <div class="phase-duration">⏳ ${phase.duration} &nbsp;|&nbsp; ✅ ${completedCount}/${phase.topics.length} done</div>
+      <div class="topic-grid" id="grid-${phase.id}"></div>
+    `;
+    el.appendChild(content);
+    container.appendChild(el);
+
+    // Render topic cards
+    const grid = content.querySelector(`#grid-${phase.id}`);
+    phase.topics.forEach(topic => {
+      const card = document.createElement('div');
+      card.className = `topic-card${progress[topic.id] ? ' done' : ''}`;
+      card.dataset.id = topic.id;
+      card.innerHTML = `
+        <div class="topic-card-header">
+          <span class="topic-icon">${topic.icon}</span>
+          <span class="topic-name">${topic.name}</span>
+          <div class="topic-check">${progress[topic.id] ? '✓' : ''}</div>
+        </div>
+        <div class="topic-tags">
+          <span class="tag ${diffClass(topic.diff)}">${topic.diff}</span>
+          ${topic.tags.map(t => `<span class="tag cat-purple">${t}</span>`).join('')}
+        </div>
+      `;
+      card.addEventListener('click', () => toggleTopic(topic.id, card, content.querySelector('.phase-duration'), phase));
+      grid.appendChild(card);
+    });
+  });
+}
+
+function toggleTopic(id, card, durationEl, phase) {
+  progress[id] = !progress[id];
+  saveProgress();
+  card.classList.toggle('done', progress[id]);
+  card.querySelector('.topic-check').textContent = progress[id] ? '✓' : '';
+  const done = phase.topics.filter(t => progress[t.id]).length;
+  durationEl.innerHTML = `⏳ ${phase.duration} &nbsp;|&nbsp; ✅ ${done}/${phase.topics.length} done`;
+  updateProgress();
+}
+
+/* ═══════════════════════════════════════
+   RENDER PATTERNS
+═══════════════════════════════════════ */
+function renderPatterns() {
+  const grid = document.getElementById('patternsGrid');
+  PATTERNS.forEach(p => {
+    const el = document.createElement('div');
+    el.className = `pattern-card${progress[p.id] ? ' done' : ''}`;
+    el.innerHTML = `
+      <div class="pattern-card-header">
+        <div class="pattern-icon">${p.icon}</div>
+        <div class="pattern-info">
+          <div class="pattern-name">${p.name}</div>
+          <div class="pattern-meta">${p.category}</div>
+        </div>
+        <span class="tag ${p.color}">${p.category}</span>
+      </div>
+      <div class="pattern-card-body">
+        <p class="pattern-desc">${p.desc}</p>
+        <div class="pattern-problems">
+          ${p.problems.map(pr => `<span class="prob-chip">${pr}</span>`).join('')}
+        </div>
+        <button class="pattern-check-btn" data-id="${p.id}">
+          ${progress[p.id] ? '✅ Mastered!' : '☐ Mark as Mastered'}
+        </button>
+      </div>
+    `;
+    el.querySelector('.pattern-check-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      const card = el;
+      progress[p.id] = !progress[p.id];
+      saveProgress();
+      card.classList.toggle('done', progress[p.id]);
+      card.querySelector('.pattern-check-btn').textContent = progress[p.id] ? '✅ Mastered!' : '☐ Mark as Mastered';
+      updateProgress();
+    });
+    grid.appendChild(el);
+  });
+}
+
+/* ═══════════════════════════════════════
+   RENDER COMPANIES
+═══════════════════════════════════════ */
+function renderCompanies() {
+  const grid = document.getElementById('companiesGrid');
+  COMPANIES.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'company-card';
+    el.innerHTML = `
+      <div class="company-header" style="background:${c.headerColor}22; border-bottom:1px solid var(--border)">
+        <div class="company-logo">${c.logo}</div>
+        <div>
+          <div class="company-name">${c.name}</div>
+          <div class="company-level">${c.level}</div>
+        </div>
+      </div>
+      <div class="company-body">
+        <p class="company-focus" style="margin-top:12px">${c.focus}</p>
+        <div class="company-topics">${c.topics.map(t => `<span class="company-topic-chip">${t}</span>`).join('')}</div>
+        <ul class="company-tips">${c.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+      </div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+/* ═══════════════════════════════════════
+   RENDER RESOURCES
+═══════════════════════════════════════ */
+function renderResources() {
+  const grid = document.getElementById('resourcesGrid');
+  RESOURCES.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'resource-card';
+    el.innerHTML = `
+      <div class="resource-icon">${r.icon}</div>
+      <div class="resource-name">${r.name}</div>
+      <p class="resource-desc">${r.desc}</p>
+      <div class="resource-tags">${r.tags.map(t => `<span class="tag cat-purple">${t}</span>`).join('')}</div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+/* ═══════════════════════════════════════
+   PARTICLES (CANVAS)
+═══════════════════════════════════════ */
+function initParticles() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  const PARTICLE_COUNT = 80;
+  const MAX_CONNECTION_DISTANCE = 100;
+
+  function makeParticle() {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 2 + .5,
+      dx: (Math.random() - .5) * .4,
+      dy: (Math.random() - .5) * .4,
+      alpha: Math.random() * .5 + .2,
+    };
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({ length: PARTICLE_COUNT }, makeParticle);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = isDark
+        ? `rgba(167,139,250,${p.alpha})`
+        : `rgba(124,58,237,${p.alpha * .5})`;
+      ctx.fill();
+      p.x += p.dx; p.y += p.dy;
+      if (p.x < 0 || p.x > W) { p.dx *= -1; p.x = Math.max(0, Math.min(W, p.x)); }
+      if (p.y < 0 || p.y > H) { p.dy *= -1; p.y = Math.max(0, Math.min(H, p.y)); }
+    });
+    // draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_CONNECTION_DISTANCE) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = isDark
+            ? `rgba(167,139,250,${.15 * (1 - dist / MAX_CONNECTION_DISTANCE)})`
+            : `rgba(124,58,237,${.08 * (1 - dist / MAX_CONNECTION_DISTANCE)})`;
+          ctx.lineWidth = .8;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  init();
+  draw();
+}
+
+/* ═══════════════════════════════════════
+   INTERSECTION OBSERVER (animate-in)
+═══════════════════════════════════════ */
+function initAnimations() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
+  }, { threshold: .1 });
+  document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+}
+
+/* ═══════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════ */
+function initSearch() {
+  const box = document.getElementById('searchBox');
+  box.addEventListener('input', () => {
+    const q = box.value.trim().toLowerCase();
+    // topics
+    document.querySelectorAll('.topic-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+    // patterns
+    document.querySelectorAll('.pattern-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+    // companies
+    document.querySelectorAll('.company-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  });
+}
+
+/* ═══════════════════════════════════════
+   THEME TOGGLE
+═══════════════════════════════════════ */
+function initTheme() {
+  const saved = localStorage.getItem('dsa-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('dsa-theme', next);
+  });
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  renderTimeline();
+  renderPatterns();
+  renderCompanies();
+  renderResources();
+  updateProgress();
+  initParticles();
+  initSearch();
+  // Delay animations to avoid flash
+  setTimeout(initAnimations, 100);
+});
+</script>
+</body>
+</html>
